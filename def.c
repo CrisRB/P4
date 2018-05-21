@@ -4,7 +4,7 @@
 #define tol 5e-7
 
 double p1(double);
-double pol(double x, int n);
+double pol(double, int);
 double dpol(double, int);
 double mnewton(double, double, double);
 
@@ -70,7 +70,7 @@ int main()
         for(int i=0; i<z+1; i++)
         {
             x2=x1;
-            printf("x1=%lf\n",x1);
+//             printf("x1=%lf\n",x1);
             x1=mnewton(x1,pol(x1,n-1),dpol(x1,n));
             if(fabs(x2-x1)<=tol) 
             {
