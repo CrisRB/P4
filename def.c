@@ -7,6 +7,7 @@ double p1(double);
 double pol(double, int);
 double dpol(double, int);
 double mnewton(double, int);
+double f1(double x);
 
 int main()
 {
@@ -18,7 +19,7 @@ int main()
     scanf("%i", &z);
 
     int particions=0;
-    double dist=0, puntsmig[n];
+    double dist=0, puntsmig[n], arrels[n];
     int canvisdesigne=0;
     
     while(canvisdesigne<n)
@@ -31,7 +32,7 @@ int main()
         for(int l=0;l<particions+1;l++)
         {
             nodes[l]=0;
-//            printf("nodes[%i]=%lf\n",l,nodes[l]);
+//            printf("nodes[%i]=%.16G\n",l,nodes[l]);
         }
         
         for(int h=0;h<n;h++)
@@ -53,23 +54,23 @@ int main()
             signe=pol(nodes[j],n-1)*pol(nodes[j+1],n-1);
             if(signe<0)
             {
-                printf("Hi ha una arrel entre %lf i %lf\n",nodes[j],nodes[j+1]);
+//                 printf("Hi ha una arrel entre %.16G i %.16G\n",nodes[j],nodes[j+1]);
                 puntsmig[t]=(nodes[j]+nodes[j+1])/2;
-                printf("puntmig[%i] = %lf\n",t,puntsmig[t]);
+//                 printf("puntmig[%i] = %.16G\n",t,puntsmig[t]);
                 canvisdesigne+=1;
                 t+=1;
             }
         }
-        printf("canvis de signe=%i\n",canvisdesigne);
+//         printf("canvis de signe=%i\n",canvisdesigne);
     }
-    for(int j=0;j<n;j++)
-    {
-        printf("\npuntsmig[%i] = %lf\n",j,puntsmig[j]);
-        printf("pol en puntmig[%i] = %lf\n",j,pol(puntsmig[j],n-1));
-        printf("dpol en puntmig[%i] = %lf\n",j,dpol(puntsmig[j],n));
-    }
+//     for(int j=0;j<n;j++)
+//     {
+//         printf("\npuntsmig[%i] = %.16G\n",j,puntsmig[j]);
+//         printf("pol en puntmig[%i] = %.16G\n",j,pol(puntsmig[j],n-1));
+//         printf("dpol en puntmig[%i] = %.16G\n",j,dpol(puntsmig[j],n));
+//     }
     
-    
+    int y=0;
     for(int j=0;j<n;j++)
     {
         double x1=puntsmig[j], x2=0;
@@ -79,15 +80,28 @@ int main()
             x1=mnewton(x1,n);
             if(fabs(x2-x1)<=tol) 
             {
-                printf("Arrel està a %.16G\n", x1);
+                arrels[y]=x1;
+                printf("Arrel %i és %.16G\n", y+1, arrels[y]);
+                y+=1;
                 break;
             }
         }
     }
     
-    printf("Ja he trobat tots els intervals que necessitava, i són %i\n",canvisdesigne);
+    double a[n];
+    for(int r=0;r<n;r++)
+    {
+        a[r]=2/((1-arrels[r]*arrels[r])*dpol(arrels[r],n)*dpol(arrels[r],n));
+        printf("a[%i]=%.16G\n",r,a[r]);
+    }
     
-
+    double resultleg1=0;
+    for(int e=0;e<n;e++)
+    {
+        resultleg1+=a[e]*f1(arrels[e]);
+    }
+    
+    printf("Resultat integral 1 amb legendre = %.16G\n",resultleg1);
     return 0;
 }
 
@@ -124,10 +138,7 @@ double mnewton(double xn, int n)    //n grau
     return xn1;
 }
 
-
-double mnewton(double xn, double pol, double dpol)
+double f1(double x)
 {
-    double xn1;
-    xn1=xn-(pol/dpol);
-    return xn1;
+    return exp(-x*x)/sqrt(1-x*x);
 }
