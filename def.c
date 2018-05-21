@@ -6,7 +6,7 @@
 double p1(double);
 double pol(double, int);
 double dpol(double, int);
-double mnewton(double, double, double);
+double mnewton(double, int);
 
 int main()
 {
@@ -62,16 +62,21 @@ int main()
         }
         printf("canvis de signe=%i\n",canvisdesigne);
     }
+    for(int j=0;j<n;j++)
+    {
+        printf("\npuntsmig[%i] = %lf\n",j,puntsmig[j]);
+        printf("pol en puntmig[%i] = %lf\n",j,pol(puntsmig[j],n-1));
+        printf("dpol en puntmig[%i] = %lf\n",j,dpol(puntsmig[j],n));
+    }
+    
     
     for(int j=0;j<n;j++)
     {
         double x1=puntsmig[j], x2=0;
-//         printf("puntsmig[%i]=%lf\n",j,puntsmig[j]);
         for(int i=0; i<z+1; i++)
         {
             x2=x1;
-//             printf("x1=%lf\n",x1);
-            x1=mnewton(x1,pol(x1,n-1),dpol(x1,n));
+            x1=mnewton(x1,n);
             if(fabs(x2-x1)<=tol) 
             {
                 printf("Arrel està a %.16G\n", x1);
@@ -86,12 +91,12 @@ int main()
     return 0;
 }
 
-double pol(double x, int n) //n és n-1
+double pol(double x, int n) //introduir n-1
 {
     double a=1,b=x,c=0;
-    for(int i=0;i<n;i++)
+    for(int i=1;i<n+1;i++)
     {
-        c=((2*n+1)*x*b-(n*a))/(n+1);
+        c=((2*i+1)*x*b-(i*a))/(i+1);
         a=b;
         b=c;
     }
@@ -100,15 +105,25 @@ double pol(double x, int n) //n és n-1
 
 double dpol(double x, int n)    //aquí la n és la que toca
 {
-    double a=1, b=x, c=0;
-    for(int i=0;i<n-1;i++)
+    double a,b;
+    if(n==1) a=1, b=x;
+    if(n==2) a=x, b=pol(x,n-1);
+    else
     {
-        c=(-n*x*b+n*a)/(1-x*x);
-        a=b;
-        b=c;
+        a=pol(x,n-2);
+        b=pol(x,n-1);
     }
-    return c;
+    
+    return (-n*x*b+n*a)/(1-x*x);
 }
+
+double mnewton(double xn, int n)    //n grau
+{
+    double xn1;
+    xn1=xn-(pol(xn,n-1)/dpol(xn,n));
+    return xn1;
+}
+
 
 double mnewton(double xn, double pol, double dpol)
 {
